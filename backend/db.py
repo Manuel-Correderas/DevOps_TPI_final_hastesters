@@ -1,16 +1,26 @@
-##backend/db.py
+import os
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = "sqlite:///./users.db"
+# Leemos la URL desde las variables de entorno
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
-SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+if not DATABASE_URL:
+    # Mensaje claro por si te olvidás de setearla
+    raise RuntimeError(
+        "DATABASE_URL no está definida. "
+        "Configuralá en tu .env (local) o en las variables de entorno de Render."
+    )
 
-class Base(DeclarativeBase):
-    pass
+# Creamos el engine de SQLAlchemy
+engine = create_engine(DATABASE_URL, echo=False)
 
-def init_db():
-    from models import User, Address, BankingInfo, CryptoWallet, KYCDocument, Role, UserRole
-    Base.metadata.create_all(bind=engine)
-print("DEBUG DATABASE_URL:", DATABASE_URL)
+# Sesión por request
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine,
+)
+
+# Base para los modelos
+Base = declarative_base()
