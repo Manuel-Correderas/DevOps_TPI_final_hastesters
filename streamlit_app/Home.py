@@ -1,6 +1,8 @@
 # streamlit_app/Home.py
 
 
+from auth_helpers import get_backend_url
+
 
 import os
 import sys
@@ -10,14 +12,16 @@ import requests
 import pandas as pd
 from pathlib import Path
 import streamlit as st
-from dotenv import load_dotenv
+##from dotenv import load_dotenv
 
 # Cargar variables desde .env (en la raíz del proyecto)
-load_dotenv()
+##load_dotenv()
+BACKEND_URL = get_backend_url()
+st.write("DEBUG BACKEND_URL:", BACKEND_URL)
 
 st.set_page_config(page_title="Ecom MKT Lab - Home", page_icon="🛒", layout="wide")
 
-BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
+##BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
 
 PAGE_NS = "home_v1"
 def K(s: str) -> str:
