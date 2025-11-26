@@ -20,6 +20,7 @@ pip install fastapi uvicorn[standard] sqlalchemy pydantic email-validator passli
 
 //Test
 
+cd "C:\Users\corre\Desktop\Nueva carpeta (3)\Nueva carpeta (2)\ultimo_mkt\ecom_MKT_Lab"
 
 python -m pip install pytest
 python -m pytest -q
