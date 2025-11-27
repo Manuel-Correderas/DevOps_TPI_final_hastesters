@@ -1,4 +1,3 @@
-# streamlit_app/pages/0d_Olvidé_mi_contraseña.py
 # streamlit_app/auth_helpers.py
 import os
 import streamlit as st
@@ -13,39 +12,26 @@ def get_backend_url() -> str:
     url = os.getenv("BACKEND_URL")
     if url:
         return url.rstrip("/")  # sacamos / final si lo hubiera
-    # Fallback para local si no hay env
     return "http://127.0.0.1:8000"
 
+
 # ============================
-# SESSION AUTH (ÚNICA FUNCIÓN)
+# SESSION AUTH
 # ============================
 def set_auth_session(data: dict) -> None:
-    """
-    Recibe la respuesta completa de /auth/login y guarda:
-    - auth_token
-    - user
-    - roles / auth_roles
-    - premium
-    - auth_user_id / auth_user_name / auth_user_email
-    Soporta respuestas planas o con 'user' anidado.
-    """
     if not isinstance(data, dict):
         return
 
-    # ---- token ----
     token = data.get("access_token") or data.get("token") or data.get("jwt")
     if token:
         st.session_state["auth_token"] = token
 
-    # ---- user ----
     user = data.get("user")
     if not isinstance(user, dict):
-        # fallback: respuesta plana
         user = data if isinstance(data, dict) else {}
 
     st.session_state["user"] = user
 
-    # ---- premium ----
     premium_val = user.get("premium", data.get("premium", 0))
     try:
         premium_val = int(premium_val or 0)
@@ -53,10 +39,9 @@ def set_auth_session(data: dict) -> None:
         premium_val = 0
 
     st.session_state["premium"] = premium_val
-    user["premium"] = premium_val  # asegurar dentro del user también
+    user["premium"] = premium_val
     st.session_state["user"] = user
 
-    # ---- roles ----
     roles_raw = user.get("roles") or user.get("role") or data.get("roles") or []
     if isinstance(roles_raw, str):
         roles_raw = [roles_raw]
@@ -74,7 +59,6 @@ def set_auth_session(data: dict) -> None:
     st.session_state["auth_roles"] = roles
     st.session_state["is_admin"] = "ADMIN" in roles
 
-    # ---- ids y datos básicos ----
     uid = user.get("id") or user.get("user_id") or data.get("user_id") or data.get("id")
     if uid:
         st.session_state["auth_user_id"] = uid

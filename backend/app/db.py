@@ -22,6 +22,7 @@ engine = create_engine(
     DATABASE_URL,
     connect_args=connect_args,
     pool_pre_ping=True,
+    echo=False,          # opcional, para no llenar de logs
 )
 
 SessionLocal = sessionmaker(
@@ -36,7 +37,7 @@ class Base(DeclarativeBase):
     pass
 
 
-def get_db():
+def get_db() -> Generator:
     """
     Dependency para FastAPI.
     Abre una sesión por request y la cierra al final.
@@ -50,8 +51,8 @@ def get_db():
 
 def init_db():
     """
-    Importa los modelos para que queden registrados en Base.metadata
-    y crea las tablas en la base de datos.
+    Registra los modelos y asegura que las tablas existan.
+    No rompe nada si ya están creadas en Postgres.
     """
     from .models import models as m
 
@@ -75,12 +76,3 @@ def init_db():
     )
 
     Base.metadata.create_all(bind=engine)
-
-# backend/app/db.py  (AL FINAL DEL ARCHIVO)
-
-def get_db() -> Generator:
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
