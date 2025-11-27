@@ -10,8 +10,11 @@ load_dotenv()
 # BACKEND URL
 # ============================
 def get_backend_url() -> str:
-    return "https://devops-tpi-final-hastesters.onrender.com"
-
+    url = os.getenv("BACKEND_URL")
+    if url:
+        return url.rstrip("/")  # sacamos / final si lo hubiera
+    # Fallback para local si no hay env
+    return "http://127.0.0.1:8000"
 
 # ============================
 # SESSION AUTH (ÚNICA FUNCIÓN)
