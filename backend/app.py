@@ -4,6 +4,16 @@ from db import init_db
 from routes_users import router as users_router
 from routes_roles import router as roles_router
 
+from flask import Flask, request, jsonify
+import sqlite3
+import random
+
+app = Flask(__name__)
+DB_PATH = "palabras.db"
+
+def conectar():
+    return sqlite3.connect(DB_PATH)
+
 app = FastAPI(title="eCom MKT Lab - Users API")
 
 app.add_middleware(
